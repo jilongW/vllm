@@ -47,7 +47,7 @@ def tpu_platform_plugin() -> Optional[str]:
 
 def cuda_platform_plugin() -> Optional[str]:
     is_cuda = False
-
+    
     try:
         from vllm.utils import import_pynvml
         pynvml = import_pynvml()
@@ -111,6 +111,10 @@ def hpu_platform_plugin() -> Optional[str]:
 def xpu_platform_plugin() -> Optional[str]:
     is_xpu = False
 
+    import torch
+    if hasattr(torch, 'xpu') and torch.xpu.is_available():
+        is_xpu = True
+
     try:
         # installed IPEX if the machine has XPUs.
         import intel_extension_for_pytorch  # noqa: F401
@@ -159,7 +163,6 @@ def openvino_platform_plugin() -> Optional[str]:
 
 builtin_platform_plugins = {
     'tpu': tpu_platform_plugin,
-    'cuda': cuda_platform_plugin,
     'rocm': rocm_platform_plugin,
     'hpu': hpu_platform_plugin,
     'xpu': xpu_platform_plugin,
